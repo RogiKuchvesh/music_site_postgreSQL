@@ -23,7 +23,8 @@ VALUES (1, 5),
 (2, 2),
 (2, 3),
 (3, 4),
-(3, 7);
+(3, 7),
+(3, 2);
 
 INSERT INTO Albums (name_album , year_release_album)
 VALUES ('Its no love', 1985),
@@ -31,18 +32,22 @@ VALUES ('Its no love', 1985),
 ('Smoke', 1982),
 ('Alla', 1990),
 ('music_Beethoven', 1803),
-('music_Bach', 1749),
+('music_Classic', 1749),
 ('Filipp', 1990),
-('Opera', 1869);
+('Opera', 1869),
+('New_album', 2019),
+('Another_album', 2020);
 
 INSERT INTO PerformersAlbums (performer_id, album_id) 
 VALUES (1, 1),
 (2, 2),
 (3, 3),
+(3, 9),
 (4, 4),
 (5, 5),
 (6, 6),
 (7, 7),
+(7, 10),
 (8, 8);
 
 INSERT INTO Songs (name_song, duration_song, album_id) 
@@ -50,7 +55,7 @@ VALUES ('Spring', 120, 1),
 ('Its no love', 208, 1),
 ('Sasha', 196, 1),
 ('Music', 234, 2),
-('Shance', 448, 2)
+('Shance', 448, 2),
 ('Evening', 313, 3),
 ('Night', 418, 3),
 ('Three_happy_days', 340, 4),
@@ -60,7 +65,9 @@ VALUES ('Spring', 120, 1),
 ('Hobby', 204, 7),
 ('Snow', 275, 7),
 ('Undina', 1246, 8),
-('Voevoda', 1586, 8);
+('Voevoda', 1586, 8),
+('New_song', 327, 9),
+('Another_song', 553, 10);
 
 INSERT INTO Collections (name_collection , year_collection)
 VALUES ('Songs_Kino', 2019),
