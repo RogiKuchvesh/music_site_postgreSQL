@@ -17,17 +17,17 @@ SELECT name_song FROM Songs
 WHERE name_song LIKE '%мой%' OR name_song LIKE '%my%';
 
 -- количество исполнителей в каждом жанре
-SELECT ganre_id, count(*) FROM genresperformers
-GROUP BY ganre_id
-ORDER BY ganre_id;
+SELECT name_ganre, count(*) FROM genres g
+JOIN genresperformers gp ON g.ganre_id = gp.ganre_id
+GROUP BY name_ganre
+ORDER BY name_ganre;
 
--- количество треков, вошедших в альбомы 2019–2020 годов, с разбивкой по годам
-SELECT a.year_release_album, COUNT(song_id) FROM songs s
+-- количество треков, вошедших в альбомы 2019–2020 годов (объединением таблиц)
+SELECT COUNT(song_id) FROM songs s
 JOIN albums a ON a.album_id = s.album_id
-WHERE year_release_album BETWEEN 2019 AND 2020
-GROUP BY a.year_release_album;
+WHERE year_release_album BETWEEN 2019 AND 2020;
 
--- общее количество треков, вошедших в альбомы 2019–2020 годов
+-- общее количество треков, вошедших в альбомы 2019–2020 годов (вложенными запросами)
 SELECT COUNT(*) 
 FROM songs 
 WHERE album_id IN (SELECT album_id 
@@ -55,16 +55,12 @@ WHERE performer_id NOT IN (SELECT performer_id
 							WHERE year_release_album = 2020));
 						
 -- все исполнители, которые не выпустили альбомы в 2020 году (объединеним таблиц)
-SELECT DISTINCT p.name_performer FROM performersalbums pa 
-JOIN performers p ON p.performer_id = pa.performer_id
-JOIN albums a ON a.album_id = pa.album_id
-WHERE year_release_album != 2020 
-AND p.performer_id NOT IN 
-	(SELECT DISTINCT p.performer_id FROM performers p
-	JOIN performersalbums pa ON p.performer_id = pa.performer_id
-	JOIN albums a ON a.album_id = pa.album_id
-	WHERE year_release_album = 2020)
-ORDER BY p.name_performer;
+SELECT name_performer
+FROM performers p
+WHERE performer_id NOT IN (
+    SELECT performer_id FROM performersalbums pa
+    JOIN albums a ON a.album_id = pa.album_id
+    WHERE year_release_album = 2020);
 
 -- названия сборников, в которых присутствует конкретный исполнитель
 SELECT DISTINCT name_collection FROM collections c
@@ -76,13 +72,13 @@ JOIN performers p ON pa.performer_id = p.performer_id
 WHERE name_performer = 'Kino';
 
 -- названия альбомов, в которых присутствуют исполнители более чем одного жанра
-SELECT DISTINCT name_album FROM albums a
+SELECT DISTINCT name_album
+FROM albums a
 JOIN performersalbums pa ON a.album_id = pa.album_id
-JOIN performers p ON pa.performer_id = p.performer_id
-JOIN genresperformers gp ON p.performer_id = gp.performer_id
-JOIN ganres g ON gp.ganre_id = g.ganre_id
-GROUP BY name_album
-HAVING COUNT(g.name_ganre) > 1;
+JOIN genresperformers gp ON pa.performer_id = gp.performer_id
+GROUP BY a.album_id, gp.performer_id
+HAVING COUNT(gp.ganre_id) > 1;
+
 
 -- наименования треков, которые не входят в сборники
 SELECT DISTINCT name_song FROM songs s
@@ -108,11 +104,11 @@ WHERE a.album_id IN (SELECT album_id FROM songs
 															GROUP BY album_id) AS c));
 
 -- названия альбомов, содержащих наименьшее количество треков (объединением таблиц)															
-SELECT DISTINCT name_album 
-FROM albums a
-JOIN (SELECT album_id, COUNT(*) AS cnt 
-	FROM songs 
-    GROUP BY album_id) AS ch ON ch.album_id = a.album_id
-JOIN (SELECT MIN(cnt) AS min_cnt FROM (SELECT COUNT(*) AS cnt 
-	FROM songs 
-	GROUP BY album_id) AS f) AS m ON ch.cnt = m.min_cnt;
+SELECT name_album
+FROM albums a JOIN songs s ON a.album_id = s.album_id
+GROUP BY a.album_id
+HAVING COUNT(song_id) = (
+    SELECT COUNT(song_id) FROM songs s
+    GROUP BY s.album_id
+    ORDER BY 1
+    LIMIT 1);

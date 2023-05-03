@@ -1,11 +1,11 @@
 CREATE TABLE IF NOT EXISTS Ganres (
     ganre_id SERIAL PRIMARY KEY,
-	name_ganre VARCHAR(40) NOT NULL UNIQUE,
+	name_ganre VARCHAR(40) NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS Performers (
     performer_id SERIAL PRIMARY KEY,
-	name_performer VARCHAR(40) NOT NULL UNIQUE,
+	name_performer VARCHAR(40) NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS GenresPerformers (
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS PerformersAlbums (
 CREATE TABLE IF NOT EXISTS Songs (
     song_id SERIAL PRIMARY KEY,
 	name_song VARCHAR(40) NOT NULL,
-    duration_song INTEGER NOT NULL CHECK (duration_song <= 1600)
+    duration_song INTEGER NOT NULL CHECK (duration_song <= 1600),
     album_id INTEGER NOT NULL REFERENCES Albums(album_id)
 );
 
